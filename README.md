@@ -1,3 +1,4 @@
+<img width="1774" height="887" alt="ChatGPT Image Jun 30, 2026, 03_35_21 PM" src="https://github.com/user-attachments/assets/3a86ec5f-4ab8-4119-bbb8-69737ee4161f" />
 # 🚀 RBA AI PRO
 
 # AI Business, Legal & Publisher Operating System
