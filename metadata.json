@@ -1,0 +1,6 @@
+{
+  "name": "RBA AI PRO",
+  "description": "Multi-Tenant AI Business, Legal & Publisher Operating System for startups, MSMEs, enterprises, law firms, publishers, and consultants.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

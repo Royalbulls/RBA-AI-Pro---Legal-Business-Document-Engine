@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net default catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Reusable hardened global helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Helper functions to get data profiles
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation blueprints for Profile entity
+    function isValidProfile(data) {
+      return data.keys().hasAll(['id', 'userId', 'partyType', 'name', 'createdAt', 'updatedAt'])
+        && data.id is string && data.id.size() > 0 && data.id.size() <= 128
+        && data.userId == request.auth.uid
+        && data.partyType in ['first_party_company', 'first_party_individual', 'second_party']
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 256
+        && (!data.keys().contains('email') || (data.email is string && data.email.size() <= 256))
+        && (!data.keys().contains('phone') || (data.phone is string && data.phone.size() <= 64))
+        && (!data.keys().contains('address') || (data.address is string && data.address.size() <= 1024))
+        && (!data.keys().contains('jurisdiction') || (data.jurisdiction is string && data.jurisdiction.size() <= 256))
+        && (!data.keys().contains('regNumber') || (data.regNumber is string && data.regNumber.size() <= 128))
+        && (!data.keys().contains('authorizedSignatory') || (data.authorizedSignatory is string && data.authorizedSignatory.size() <= 256));
+    }
+
+    // Validation blueprints for GeneratedDocument entity
+    function isValidGeneratedDocument(data) {
+      return data.keys().hasAll(['id', 'userId', 'type', 'title', 'params', 'content', 'createdAt', 'updatedAt'])
+        && data.id is string && data.id.size() > 0 && data.id.size() <= 128
+        && data.userId == request.auth.uid
+        && data.type is string && data.type.size() > 0 && data.type.size() <= 128
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 256
+        && data.content is string && data.content.size() <= 1048576 // Up to 1MB size
+        && data.params is map
+        && (!data.keys().contains('emailDraft') || (data.emailDraft is string && data.emailDraft.size() <= 262144))
+        && (!data.keys().contains('whatsappSummary') || (data.whatsappSummary is string && data.whatsappSummary.size() <= 65536));
+    }
+
+    // Rules for Profiles collection
+    match /profiles/{profileId} {
+      // Prevents listing all documents; owner can read only their own documents
+      allow get: if isOwner(existing().userId) && isValidId(profileId);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn() 
+        && isValidId(profileId) 
+        && isValidProfile(incoming())
+        && incoming().createdAt == request.time 
+        && incoming().updatedAt == request.time;
+
+      allow update: if isOwner(existing().userId)
+        && isValidId(profileId)
+        && isValidProfile(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().userId == existing().userId
+        && (
+          // Action: Edit fields
+          incoming().diff(existing()).affectedKeys().hasAny(['name', 'partyType', 'email', 'phone', 'address', 'jurisdiction', 'regNumber', 'authorizedSignatory', 'updatedAt'])
+        );
+
+      allow delete: if isOwner(existing().userId) && isValidId(profileId);
+    }
+
+    // Rules for Generated Documents collection
+    match /documents/{documentId} {
+      allow get: if isOwner(existing().userId) && isValidId(documentId);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn()
+        && isValidId(documentId)
+        && isValidGeneratedDocument(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isOwner(existing().userId)
+        && isValidId(documentId)
+        && isValidGeneratedDocument(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().userId == existing().userId
+        && (
+          // Action: Edit document settings or content
+          incoming().diff(existing()).affectedKeys().hasAny(['title', 'content', 'params', 'emailDraft', 'whatsappSummary', 'updatedAt'])
+        );
+
+      allow delete: if isOwner(existing().userId) && isValidId(documentId);
+    }
+  }
+}
