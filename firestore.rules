@@ -57,12 +57,22 @@ service cloud.firestore {
         && (!data.keys().contains('whatsappSummary') || (data.whatsappSummary is string && data.whatsappSummary.size() <= 65536));
     }
 
+    // Validation blueprints for FormIntake entity
+    function isValidForm(data) {
+      return data.keys().hasAll(['formId', 'userId', 'responderUri', 'editUri', 'title', 'contractType', 'dateCreated', 'createdAt'])
+        && data.formId is string && data.formId.size() > 0 && data.formId.size() <= 128
+        && data.userId == request.auth.uid
+        && data.responderUri is string && data.responderUri.size() <= 1024
+        && data.editUri is string && data.editUri.size() <= 1024
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 256
+        && data.contractType is string && data.contractType.size() > 0 && data.contractType.size() <= 128
+        && data.dateCreated is string;
+    }
+
     // Rules for Profiles collection
     match /profiles/{profileId} {
-      // Prevents listing all documents; owner can read only their own documents
-      allow get: if isOwner(existing().userId) && isValidId(profileId);
-      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
-
+      allow get: if isSignedIn() && (resource == null || resource.data.get('userId', '') == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.get('userId', '') == request.auth.uid;
       allow create: if isSignedIn() 
         && isValidId(profileId) 
         && isValidProfile(incoming())
@@ -85,9 +95,8 @@ service cloud.firestore {
 
     // Rules for Generated Documents collection
     match /documents/{documentId} {
-      allow get: if isOwner(existing().userId) && isValidId(documentId);
-      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
-
+      allow get: if isSignedIn() && (resource == null || resource.data.get('userId', '') == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.get('userId', '') == request.auth.uid;
       allow create: if isSignedIn()
         && isValidId(documentId)
         && isValidGeneratedDocument(incoming())
@@ -106,6 +115,24 @@ service cloud.firestore {
         );
 
       allow delete: if isOwner(existing().userId) && isValidId(documentId);
+    }
+
+    // Rules for Forms collection
+    match /forms/{formId} {
+      allow get: if isSignedIn() && (resource == null || resource.data.get('userId', '') == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.get('userId', '') == request.auth.uid;
+      allow create: if isSignedIn()
+        && isValidId(formId)
+        && isValidForm(incoming())
+        && incoming().createdAt == request.time;
+
+      allow update: if isOwner(existing().userId)
+        && isValidId(formId)
+        && isValidForm(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().userId == existing().userId;
+
+      allow delete: if isOwner(existing().userId) && isValidId(formId);
     }
   }
 }

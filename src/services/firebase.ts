@@ -328,13 +328,19 @@ export async function fetchUserProfiles(): Promise<Profile[]> {
   try {
     const q = query(
       collection(db, profilesPath),
-      where('userId', '==', user.uid),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', user.uid)
     );
     const snapshot = await getDocs(q);
     const list: Profile[] = [];
     snapshot.forEach((d) => {
       list.push(d.data() as Profile);
+    });
+
+    // Sort in-memory to prevent requiring composite indexes in Firestore
+    list.sort((a, b) => {
+      const timeA = a.createdAt ? (typeof (a.createdAt as any).toMillis === 'function' ? (a.createdAt as any).toMillis() : ((a.createdAt as any).seconds ? (a.createdAt as any).seconds * 1000 : new Date(a.createdAt as any).getTime())) : 0;
+      const timeB = b.createdAt ? (typeof (b.createdAt as any).toMillis === 'function' ? (b.createdAt as any).toMillis() : ((b.createdAt as any).seconds ? (b.createdAt as any).seconds * 1000 : new Date(b.createdAt as any).getTime())) : 0;
+      return timeB - timeA;
     });
 
     // Sync remote into localStorage cache
@@ -542,14 +548,20 @@ export async function fetchUserDocuments(): Promise<GeneratedDocument[]> {
   try {
     const q = query(
       collection(db, docPath),
-      where('userId', '==', user.uid),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', user.uid)
     );
     const snapshot = await getDocs(q);
     const list: GeneratedDocument[] = [];
     snapshot.forEach((d) => {
       const raw = d.data();
       list.push(raw as GeneratedDocument);
+    });
+
+    // Sort in-memory to prevent requiring composite indexes in Firestore
+    list.sort((a, b) => {
+      const timeA = a.createdAt ? (typeof (a.createdAt as any).toMillis === 'function' ? (a.createdAt as any).toMillis() : ((a.createdAt as any).seconds ? (a.createdAt as any).seconds * 1000 : new Date(a.createdAt as any).getTime())) : 0;
+      const timeB = b.createdAt ? (typeof (b.createdAt as any).toMillis === 'function' ? (b.createdAt as any).toMillis() : ((b.createdAt as any).seconds ? (b.createdAt as any).seconds * 1000 : new Date(b.createdAt as any).getTime())) : 0;
+      return timeB - timeA;
     });
 
     // Mirror list in localStorage for offline caching

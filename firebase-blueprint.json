@@ -37,6 +37,22 @@
         "updatedAt": { "type": "string", "format": "date-time", "description": "When the document was updated" }
       },
       "required": ["id", "userId", "type", "title", "params", "content", "createdAt", "updatedAt"]
+    },
+    "FormIntake": {
+      "title": "Form Intake",
+      "description": "Represents a Google Forms integration intake mapped to secure contract creation workflows.",
+      "type": "object",
+      "properties": {
+        "formId": { "type": "string", "description": "Unique Form identifier" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "responderUri": { "type": "string", "description": "Public link for client submission" },
+        "editUri": { "type": "string", "description": "Restricted admin editor link" },
+        "title": { "type": "string", "description": "Title of the Form" },
+        "contractType": { "type": "string", "description": "Document type for intake mappings" },
+        "dateCreated": { "type": "string", "description": "Creation timestamp in string form" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp when saved in database" }
+      },
+      "required": ["formId", "userId", "responderUri", "editUri", "title", "contractType", "dateCreated", "createdAt"]
     }
   },
   "firestore": {
@@ -47,6 +63,10 @@
     "/documents/{documentId}": {
       "schema": "GeneratedDocument",
       "description": "Collection of generated legal/business documents."
+    },
+    "/forms/{formId}": {
+      "schema": "FormIntake",
+      "description": "Collection of Google Forms client intake metadata."
     }
   }
 }

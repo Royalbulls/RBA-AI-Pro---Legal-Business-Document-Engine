@@ -102,6 +102,8 @@ import MarketingOSModule from './components/MarketingOSModule';
 import FinanceOSModule from './components/FinanceOSModule';
 import LoanOSModule from './components/LoanOSModule';
 import BusinessOSModule from './components/BusinessOSModule';
+import PipelineDashboard from './components/PipelineDashboard';
+import { LawyerOSModule } from './components/LawyerOSModule';
 
 
 const DOCUMENT_ICONS: any = {
@@ -261,7 +263,7 @@ export default function App() {
   const [activeWorkspaceRole, setActiveWorkspaceRole] = useState<'Super Admin' | 'Workspace Owner' | 'Admin' | 'Manager' | 'Staff' | 'Client' | 'Guest'>('Workspace Owner');
   
   // Primary Operating System Module (switches between sub-OS views)
-  const [activeOsModule, setActiveOsModule] = useState<'legal_os' | 'business_os' | 'publisher_os' | 'marketing_os' | 'finance_os' | 'loan_os' | 'automation_os' | 'marketplace_os' | 'saas_admin'>('legal_os');
+  const [activeOsModule, setActiveOsModule] = useState<'legal_os' | 'business_os' | 'publisher_os' | 'marketing_os' | 'finance_os' | 'loan_os' | 'automation_os' | 'marketplace_os' | 'saas_admin' | 'pipeline_os'>('pipeline_os');
 
   const currentWorkspace = workspaces.find(w => w.id === activeWorkspaceId) || workspaces[0];
 
@@ -1142,7 +1144,8 @@ export default function App() {
               className="w-full bg-white border border-[#E5E5E5] rounded-xl px-3 py-2 text-xs font-bold text-[#1A1A1A] pr-8 focus:outline-none focus:ring-1 focus:ring-gray-950 appearance-none cursor-pointer shadow-sm"
               style={{ borderLeftWidth: '4px', borderLeftColor: currentWorkspace.colors.accent }}
             >
-              <option value="legal_os">🏛️ Legal OS & AI Chat</option>
+              <option value="pipeline_os">🚀 Smart Pipeline & UX Control</option>
+              <option value="legal_os">⚖️ Lawyer & Law Firm OS (Pro)</option>
               <option value="business_os">💼 Business OS & Team</option>
               <option value="publisher_os">📚 Publisher OS</option>
               <option value="marketing_os">📣 Marketing OS (Ad Copy)</option>
@@ -1161,135 +1164,11 @@ export default function App() {
         <div className="flex-1 overflow-y-auto p-4 space-y-5">
           {activeOsModule === 'legal_os' ? (
             <>
-              {/* GROUP 1: Core OS Hub */}
               <div>
-                <p className="text-[9px] font-extrabold text-[#9E9E9E] uppercase tracking-widest mb-2 px-2">Core OS Hub</p>
-                <div className="space-y-0.5">
-                  <button 
-                    onClick={() => setActiveTab('crm')}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'crm' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Activity className={`w-4 h-4 ${activeTab === 'crm' ? 'text-rose-400 animate-pulse' : 'text-rose-500'}`} />
-                      <span>CRM Dashboard</span>
-                    </div>
-                    <span className="text-[9px] bg-rose-500 text-white px-1.5 py-0.5 rounded font-mono font-bold scale-90">LIVE</span>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('generator')}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'generator' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <FileText className={`w-4 h-4 ${activeTab === 'generator' ? 'text-blue-400' : 'text-blue-500'}`} />
-                    <span>Agreement Generator</span>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('bundle')}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'bundle' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <Search className={`w-4 h-4 ${activeTab === 'bundle' ? 'text-purple-400' : 'text-purple-500'}`} />
-                    <span>Smart Bundle Suite</span>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('history')}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'history' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <Folder className={`w-4 h-4 ${activeTab === 'history' ? 'text-amber-400' : 'text-amber-500'}`} />
-                    <span>Document Vault</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* GROUP 2: Compliance & Operations */}
-              <div>
-                <p className="text-[9px] font-extrabold text-[#9E9E9E] uppercase tracking-widest mb-2 px-2">Compliance & Ops</p>
-                <div className="space-y-0.5">
-                  <button 
-                    onClick={() => setActiveTab('kyc')}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'kyc' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <ShieldCheck className={`w-4 h-4 ${activeTab === 'kyc' ? 'text-emerald-400' : 'text-emerald-500'}`} />
-                      <span>KYC Manager</span>
-                    </div>
-                    {Object.values(kycRecords).filter(r => r.status === 'pending').length > 0 && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-ping"></span>
-                    )}
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('esign')}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'esign' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <FileCheck className={`w-4 h-4 ${activeTab === 'esign' ? 'text-indigo-400' : 'text-indigo-500'}`} />
-                      <span>E-Sign Portal</span>
-                    </div>
-                    {esignDocs.filter(d => d.status === 'pending').length > 0 && (
-                      <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1 py-0.2 rounded font-mono font-bold scale-90">
-                        {esignDocs.filter(d => d.status === 'pending').length}
-                      </span>
-                    )}
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('payments')}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'payments' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <DollarSign className={`w-4 h-4 ${activeTab === 'payments' ? 'text-amber-400' : 'text-amber-500'}`} />
-                      <span>Payment Tracker</span>
-                    </div>
-                    {paymentInvoices.filter(i => i.status === 'unpaid').length > 0 && (
-                      <span className="text-[9px] bg-red-100 text-red-700 px-1 py-0.2 rounded font-mono font-bold scale-90">
-                        INR
-                      </span>
-                    )}
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('renewals')}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'renewals' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Bell className={`w-4 h-4 ${activeTab === 'renewals' ? 'text-red-400' : 'text-red-500'}`} />
-                      <span>Renewal Reminders</span>
-                    </div>
-                    <span className="text-[9px] bg-red-500 text-white px-1.5 py-0.5 rounded font-mono font-bold scale-90">
-                      {renewalReminders.filter(r => r.status === 'active').length}
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              {/* GROUP 3: Intelligence & Sync */}
-              <div>
-                <p className="text-[9px] font-extrabold text-[#9E9E9E] uppercase tracking-widest mb-2 px-2">Intelligence & Sync</p>
-                <div className="space-y-0.5">
-                  <button 
-                    onClick={() => setActiveTab('ai_assistant')}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'ai_assistant' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <Bot className={`w-4 h-4 ${activeTab === 'ai_assistant' ? 'text-cyan-400 animate-bounce' : 'text-cyan-500'}`} />
-                    <span>AI Legal Assistant</span>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('intake')}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'intake' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <ClipboardList className={`w-4 h-4 ${activeTab === 'intake' ? 'text-teal-400' : 'text-teal-500'}`} />
-                    <span>Forms Intake Node</span>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('calendar')}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'calendar' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <Calendar className={`w-4 h-4 ${activeTab === 'calendar' ? 'text-emerald-400 animate-pulse' : 'text-emerald-500'}`} />
-                    <span>Consultation Scheduler</span>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('profiles')}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'profiles' ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-[#5F5F5F] hover:bg-[#F5F5F5] hover:text-[#1A1A1A]'}`}
-                  >
-                    <Users className={`w-4 h-4 ${activeTab === 'profiles' ? 'text-blue-400' : 'text-blue-500'}`} />
-                    <span>Manage Profiles</span>
-                  </button>
+                <p className="text-[9px] font-extrabold text-[#9E9E9E] uppercase tracking-widest mb-2 px-2">Lawyer & Law Firm OS</p>
+                <div className="p-4 bg-amber-500/[0.03] rounded-xl border border-amber-500/10 space-y-2 text-xs">
+                  <p className="font-extrabold text-amber-500">🏛️ Active Chambers OS</p>
+                  <p className="text-stone-500 leading-normal">Interactive dashboards, document templates, specialized Coordinated AI Agents, client CRM registries, court diaries, billing reports, and FIPS cryptographic key managers are fully initialized inside the main workspace viewport.</p>
                 </div>
               </div>
             </>
@@ -1496,7 +1375,8 @@ export default function App() {
               </button>
             )}
             <h1 className="font-semibold text-sm lg:text-lg truncate text-gray-900 flex items-center gap-2">
-              {activeOsModule === 'business_os' ? '💼 Business OS & Team Directory' :
+              {activeOsModule === 'pipeline_os' ? '🚀 Smart Pipeline & UX Control' :
+               activeOsModule === 'business_os' ? '💼 Business OS & Team Directory' :
                activeOsModule === 'publisher_os' ? '📚 Publisher OS & Creative Studio' :
                activeOsModule === 'marketing_os' ? '📣 Marketing OS & Funnel Copywriter' :
                activeOsModule === 'finance_os' ? '💰 Finance OS & GST Ledger' :
@@ -1599,8 +1479,13 @@ export default function App() {
 
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
-          {activeOsModule !== 'legal_os' ? (
+          {activeOsModule === 'legal_os' ? (
+            <LawyerOSModule />
+          ) : true ? (
             <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
+              {activeOsModule === 'pipeline_os' && (
+                <PipelineDashboard />
+              )}
               {activeOsModule === 'business_os' && (
                 <BusinessOSModule 
                   activeWorkspace={currentWorkspace} 
